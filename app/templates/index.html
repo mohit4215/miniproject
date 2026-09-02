@@ -1,0 +1,557 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>StudyPartner — Focus rooms · AI notebook · notes · streaks</title>
+  <meta name="description" content="StudyPartner: shared Pomodoro focus rooms with anti-distraction enforcement, an AI notebook, notes, and gamification." />
+  <link rel="stylesheet" href="/static/css/app.css" />
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+</head>
+<body>
+
+  <!-- ═══════════ AUTH VIEW ═══════════ -->
+  <div id="auth-view" class="auth-wrap">
+    <div class="auth-bg-orb orb1"></div>
+    <div class="auth-bg-orb orb2"></div>
+    <div class="authbox card">
+      <div class="brand">
+        <span class="brand-mark">📚</span>
+        <span>Study<b>Partner</b></span>
+      </div>
+      <p class="tagline">Your all-in-one academic focus companion</p>
+
+      <div class="auth-features">
+        <span class="auth-feature-chip">⏱ Focus Rooms</span>
+        <span class="auth-feature-chip">🤖 AI Notebook</span>
+        <span class="auth-feature-chip">🏆 Gamification</span>
+      </div>
+
+      <label>Email</label>
+      <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+      <label>Password</label>
+      <input type="password" id="auth-pass" placeholder="••••••••" autocomplete="current-password" />
+
+      <div class="auth-actions">
+        <button class="btn primary" id="login-btn">Sign in</button>
+        <button class="btn" id="signup-btn">Create account</button>
+      </div>
+      <button class="btn" id="google-btn" style="width:100%;margin-top:8px">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+        Continue with Google
+      </button>
+
+      <p class="auth-msg" id="auth-msg"></p>
+
+      {% if dev_auth %}
+      <div class="auth-divider">development mode</div>
+      <div class="dev-banner">
+        <div class="dev-banner-label">⚡ Dev Access</div>
+        <div class="row" style="gap:8px">
+          <input type="text" id="dev-uid" placeholder="Enter any username…" style="flex:1" />
+          <button class="btn primary sm" id="dev-login">Enter →</button>
+        </div>
+      </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- ═══════════ APP VIEW ═══════════ -->
+  <div id="app-view" class="layout hidden">
+
+    <!-- ─── Sidebar ─── -->
+    <aside class="sidebar">
+      <div class="brand">
+        <span class="brand-mark">📚</span>
+        <span>Study<b>Partner</b></span>
+      </div>
+
+      <nav class="tabs" role="navigation" aria-label="Main navigation">
+        <button class="tab-btn active" id="tab-rooms" data-tab="rooms">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+          Study Rooms
+        </button>
+        <button class="tab-btn" id="tab-notebook" data-tab="notebook">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4h6a4 4 0 0 1 4 4v13a3 3 0 0 0-3-3H2z"/><path d="M22 4h-6a4 4 0 0 0-4 4v13a3 3 0 0 1 3-3h7z"/></svg>
+          AI Notebook
+        </button>
+        <button class="tab-btn" id="tab-notes" data-tab="notes">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/><path d="M8 13h8M8 17h5"/></svg>
+          Notes
+        </button>
+        <button class="tab-btn" id="tab-stats" data-tab="stats">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          Stats &amp; Leaderboard
+        </button>
+        <button class="tab-btn hidden" id="tab-admin" data-tab="admin">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-3.5 8-10V5l-8-3-8 3v7c0 6.5 8 10 8 10z"/></svg>
+          Admin
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">
+        <div class="userchip hidden" id="userchip">
+          <div class="who">
+            <div class="avatar" id="uavatar">?</div>
+            <b id="uname">—</b>
+          </div>
+          <div class="who" style="padding-left:36px">
+            <span class="badge primary" id="lvl-badge">Level —</span>
+          </div>
+          <button class="btn sm ghost" id="logout-btn" style="margin-top:4px">Sign out</button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- ─── Main content ─── -->
+    <main class="content" role="main">
+
+      <!-- ═══ ROOMS PANEL ═══ -->
+      <section class="panel active" id="panel-rooms">
+        <div class="page-head">
+          <div class="kicker">Study Rooms</div>
+          <h2>Focused sessions, together</h2>
+          <p>Create or join a room. Leave the tab while the timer runs → violation counted against you.</p>
+        </div>
+
+        <!-- Lobby -->
+        <div id="rooms-lobby">
+          <div class="grid cols-2">
+            <div class="card highlighted">
+              <h3>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--primary-light)"><path d="M12 5v14M5 12l7 7 7-7"/></svg>
+                Create a room
+              </h3>
+              <label>Room name</label>
+              <input type="text" id="room-name" placeholder="e.g. Finals grind — Physics" maxlength="60" />
+              <label>Default session length (minutes)</label>
+              <input type="number" id="room-dur" value="25" min="5" max="180" />
+              <label class="chk">
+                <input type="checkbox" id="room-public" checked />
+                List room publicly
+              </label>
+              <button class="btn primary" id="create-room" style="width:100%;margin-top:18px">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 5v14M5 12h14"/></svg>
+                Create room
+              </button>
+            </div>
+
+            <div class="card">
+              <h3>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--cyan)"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7"/></svg>
+                Join by code
+              </h3>
+              <div class="row" style="gap:8px">
+                <input type="text" id="join-code" placeholder="Room code (e.g. AB3X7K)" style="text-transform:uppercase;letter-spacing:0.08em;font-family:'JetBrains Mono',monospace" maxlength="8" />
+                <button class="btn primary" id="join-code-btn">Join</button>
+              </div>
+
+              <hr class="sep" />
+
+              <h3>
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--success)"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+                Public rooms
+                <button class="btn xs ghost" id="public-refresh" style="margin-left:auto">↻ refresh</button>
+              </h3>
+              <div id="public-rooms" class="muted" style="min-height:60px">
+                <span class="spinner"></span> Loading…
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active room -->
+        <div class="hidden" id="room-active">
+          <div class="page-head" style="margin-bottom:16px">
+            <div class="kicker" id="room-code-label">Room</div>
+            <div class="row spread wrap" style="gap:10px">
+              <h2 id="room-title" style="font-size:20px;margin:0"></h2>
+              <div class="row" style="gap:8px">
+                <span class="badge" id="host-controls-note"></span>
+                <button class="btn danger sm" id="leave-room">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4M16 17l5-5-5-5M21 12H9"/></svg>
+                  Leave room
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid" style="grid-template-columns: 1fr 300px; gap:16px">
+            <!-- Timer card -->
+            <div class="card" style="text-align:center">
+              <div class="timer-shell">
+                <div class="timer-ring-wrap">
+                  <svg width="220" height="220" viewBox="0 0 100 100">
+                    <circle class="timer-ring-bg" cx="50" cy="50" r="45" />
+                    <circle class="timer-ring-fg idle" id="timer-ring" cx="50" cy="50" r="45" />
+                  </svg>
+                  <div class="timer-inner">
+                    <div class="timer idle" id="big-timer">25:00</div>
+                    <span class="timer-status idle" id="timer-status">
+                      <span class="dot"></span>
+                      <span id="timer-status-txt">Ready</span>
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="timer-controls">
+                <div class="timer-dur-input">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+                  <input type="number" id="sess-min" value="25" min="1" max="180" title="minutes" />
+                  <span>min</span>
+                </div>
+                <button class="btn primary" id="btn-start">▶ Start</button>
+                <button class="btn" id="btn-pause">⏸</button>
+                <button class="btn" id="btn-resume">▶</button>
+                <button class="btn" id="btn-finish">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M5 5l14 14M5 19L19 5"/></svg>
+                  Finish early
+                </button>
+                <button class="btn danger" id="btn-reset">Reset</button>
+              </div>
+
+              <p class="muted" style="margin-top:14px;font-size:12px">
+                ⚠️ Leaving or minimizing this tab during an active session counts as a violation.
+              </p>
+
+              <div id="results-box" class="results-box hidden"></div>
+            </div>
+
+            <!-- Right column: members + chat -->
+            <div style="display:flex;flex-direction:column;gap:14px">
+              <div class="card" style="padding:16px">
+                <h3>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                  Members
+                  <span class="badge" id="online-count" style="margin-left:auto"></span>
+                </h3>
+                <ul class="member-list" id="member-list"></ul>
+              </div>
+
+              <div class="card" style="padding:16px;flex:1;display:flex;flex-direction:column">
+                <h3>
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                  Room chat
+                </h3>
+                <div class="chatlog" id="chatlog" style="flex:1"></div>
+                <div class="row" style="margin-top:10px;gap:6px">
+                  <input type="text" id="chat-input" placeholder="Message the room…" maxlength="400" />
+                  <button class="btn primary sm" id="chat-send">Send</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ NOTEBOOK PANEL ═══ -->
+      <section class="panel" id="panel-notebook">
+        <div class="page-head">
+          <div class="kicker">AI Notebook</div>
+          <h2>Study from your own material</h2>
+          <p>Upload sources, then ask questions, generate summaries, or test yourself with quizzes.</p>
+        </div>
+
+        <div class="grid cols-3">
+          <!-- Notebook list -->
+          <div class="card">
+            <h3>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+              Notebooks
+            </h3>
+            <div class="row" style="gap:6px;margin-bottom:10px">
+              <input type="text" id="nb-title" placeholder="New notebook title" style="flex:1" />
+              <button class="btn primary sm" id="nb-create">+ Add</button>
+            </div>
+            <div id="nb-list" class="nb-list-scroll muted">Loading…</div>
+          </div>
+
+          <!-- Sources -->
+          <div class="card">
+            <h3>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9z"/><polyline points="13 2 13 9 20 9"/></svg>
+              Sources
+              <small id="nb-current-name"></small>
+            </h3>
+            <div id="src-list" class="muted" style="margin-bottom:14px">Select a notebook first.</div>
+            <hr class="sep" />
+            <label>Add text source</label>
+            <input type="text" id="src-title" placeholder="Title, e.g. Chapter 4" style="margin-bottom:8px" />
+            <textarea id="src-text" placeholder="Paste study material here…" style="min-height:72px"></textarea>
+            <div class="row wrap" style="margin-top:10px;gap:8px">
+              <button class="btn sm primary" id="src-add">+ Add source</button>
+              <input type="file" id="src-file" accept=".txt,.md,.pdf" style="display:none" />
+              <button class="btn sm" id="src-file-btn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Upload .txt / .md / .pdf
+              </button>
+            </div>
+          </div>
+
+          <!-- Agent -->
+          <div class="card">
+            <h3>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+              AI Agent
+              {% if llm_mock %}<span class="badge warning">Mock mode</span>{% endif %}
+            </h3>
+            <textarea id="ask-input" placeholder="Ask anything about your sources…" style="min-height:72px"></textarea>
+            <div class="row wrap" style="margin-top:10px;gap:8px">
+              <button class="btn primary sm" id="ask-btn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+                Ask
+              </button>
+              <button class="btn sm" id="sum-btn">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h16M4 12h10M4 18h14"/></svg>
+                Summarize
+              </button>
+              <div style="display:flex;align-items:center;gap:6px;margin-left:auto">
+                <select id="quiz-n" style="width:60px;padding:4px 8px">
+                  <option>3</option>
+                  <option selected>5</option>
+                  <option>8</option>
+                  <option>10</option>
+                </select>
+                <button class="btn sm" id="quiz-btn">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3M12 17h.01"/></svg>
+                  Quiz me
+                </button>
+              </div>
+            </div>
+            <div id="agent-out" class="md-body muted agent-out-scroll" style="white-space:pre-wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)"></div>
+          </div>
+        </div>
+
+        <!-- Artifacts -->
+        <div class="card" style="margin-top:16px">
+          <div class="row spread" style="margin-bottom:10px">
+            <h3 style="margin:0">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+              Saved artifacts
+              <small>stored locally in browser — export to move them</small>
+            </h3>
+            <div class="row" style="gap:6px">
+              <button class="btn sm" id="art-export">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                Export JSON
+              </button>
+              <input type="file" id="art-import-file" accept=".json" style="display:none" />
+              <button class="btn sm" id="art-import">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                Import
+              </button>
+            </div>
+          </div>
+          <div id="artifact-list" class="muted">No artifacts yet for this notebook.</div>
+        </div>
+
+        <!-- Quiz area -->
+        <div class="card hidden" id="quiz-area" style="margin-top:16px"></div>
+      </section>
+
+      <!-- ═══ NOTES PANEL ═══ -->
+      <section class="panel" id="panel-notes">
+        <div class="page-head">
+          <div class="kicker">Notes</div>
+          <h2>Your knowledge base</h2>
+          <p>Synced to the server — available on every device. Markdown supported.</p>
+        </div>
+
+        <div class="grid cols-2">
+          <!-- Note editor -->
+          <div class="card">
+            <div class="row spread" style="margin-bottom:14px">
+              <h3 id="note-form-title" style="margin:0">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                New note
+              </h3>
+            </div>
+            <input type="hidden" id="note-id" />
+            <label>Title</label>
+            <input type="text" id="note-title" placeholder="Note title…" />
+            <label>Tags <span style="font-weight:400;color:var(--text-muted)">(comma-separated)</span></label>
+            <input type="text" id="note-tags" placeholder="biology, chapter-2, important" />
+            <label>Content <span style="font-weight:400;color:var(--text-muted)">(markdown)</span></label>
+            <textarea id="note-content" style="min-height:200px;font-family:'JetBrains Mono',monospace;font-size:12.5px" placeholder="Write your notes here…"></textarea>
+            <div class="row" style="margin-top:16px;gap:8px">
+              <button class="btn primary" id="note-save">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+                Save note
+              </button>
+              <button class="btn ghost hidden" id="note-cancel">Cancel</button>
+              <button class="btn danger hidden" id="note-delete">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+                Delete
+              </button>
+            </div>
+          </div>
+
+          <!-- Notes list -->
+          <div class="card">
+            <div class="row spread" style="margin-bottom:12px">
+              <h3 style="margin:0">
+                <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+                All notes
+              </h3>
+              <input type="text" id="note-search" placeholder="Search notes…" style="width:160px" />
+            </div>
+            <div id="notes-list" class="muted">Loading…</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ STATS PANEL ═══ -->
+      <section class="panel" id="panel-stats">
+        <div class="page-head">
+          <div class="kicker">Stats &amp; Gamification</div>
+          <h2>Your progress</h2>
+          <p>Earn points for focus sessions, quizzes and notes. Keep the daily streak alive for bonuses.</p>
+        </div>
+
+        <div class="grid cols-3" style="margin-bottom:16px">
+          <div class="card stat-card">
+            <div class="stat-kicker">🏅 Total Points</div>
+            <div class="stat-big" id="st-points">—</div>
+            <div class="bar"><div id="st-lvlbar" style="width:0%"></div></div>
+            <div class="stat-sub" id="st-lvltxt"></div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-kicker">🔥 Current streak</div>
+            <div class="stat-big" id="st-streak">—</div>
+            <div class="stat-sub" id="st-streakbest"></div>
+          </div>
+          <div class="card stat-card">
+            <div class="stat-kicker">📊 Activity</div>
+            <div class="stat-big" id="st-sessions">—</div>
+            <div class="stat-sub" id="st-totals"></div>
+          </div>
+        </div>
+
+        <div class="grid cols-2">
+          <div class="card">
+            <h3>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z"/></svg>
+              Recent point events
+            </h3>
+            <table class="tbl" id="events-tbl"></table>
+          </div>
+          <div class="card">
+            <h3>
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+              Global leaderboard
+            </h3>
+            <table class="tbl" id="lb-tbl"></table>
+          </div>
+        </div>
+      </section>
+
+      <!-- ═══ ADMIN PANEL ═══ -->
+      <section class="panel" id="panel-admin">
+        <div class="page-head">
+          <div class="kicker">Administration</div>
+          <h2>Platform overview</h2>
+          <p>Manage users, rooms and live sessions. Actions take effect immediately.</p>
+        </div>
+
+        <div class="grid cols-5" style="grid-template-columns:repeat(5,1fr);margin-bottom:16px">
+          <div class="card stat-card" style="padding:18px 10px">
+            <div class="stat-kicker">Users</div>
+            <div class="stat-big" id="ov-users" style="font-size:28px">—</div>
+          </div>
+          <div class="card stat-card" style="padding:18px 10px">
+            <div class="stat-kicker">Rooms</div>
+            <div class="stat-big" id="ov-rooms" style="font-size:28px">—</div>
+          </div>
+          <div class="card stat-card" style="padding:18px 10px">
+            <div class="stat-kicker">Online now</div>
+            <div class="stat-big" id="ov-online" style="font-size:28px">—</div>
+          </div>
+          <div class="card stat-card" style="padding:18px 10px">
+            <div class="stat-kicker">Live sessions</div>
+            <div class="stat-big" id="ov-live" style="font-size:28px">—</div>
+          </div>
+          <div class="card stat-card" style="padding:18px 10px">
+            <div class="stat-kicker">Sessions 24h</div>
+            <div class="stat-big" id="ov-s24" style="font-size:28px">—</div>
+          </div>
+        </div>
+
+        <div class="card" style="margin-bottom:16px">
+          <div class="row spread" style="margin-bottom:14px">
+            <h3 style="margin:0">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+              Users
+            </h3>
+            <input type="text" id="u-search" placeholder="Search name, email, uid…" style="width:240px" />
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>User</th>
+                  <th>Email</th>
+                  <th>Points</th>
+                  <th>Streak</th>
+                  <th>Notes</th>
+                  <th>Role</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="u-body"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="row spread" style="margin-bottom:14px">
+            <h3 style="margin:0">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>
+              Rooms
+            </h3>
+            <button class="btn sm ghost" id="r-refresh">↻ Refresh</button>
+          </div>
+          <div style="overflow-x:auto">
+            <table class="tbl">
+              <thead>
+                <tr>
+                  <th>Code</th>
+                  <th>Name</th>
+                  <th>Host</th>
+                  <th>Members</th>
+                  <th>Status</th>
+                  <th>Created</th>
+                  <th style="text-align:right">Actions</th>
+                </tr>
+              </thead>
+              <tbody id="r-body"></tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+    </main>
+  </div>
+
+  <!-- Focus overlay -->
+  <div id="focus-overlay">
+    <div class="overlay-card">
+      <span class="overlay-icon">⚠️</span>
+      <h1>Focus broken</h1>
+      <p>You left the study session. Every violation costs points and hurts your room's momentum. Stay on track!</p>
+      <button class="btn primary" id="overlay-back" style="font-size:14px;padding:13px 32px;width:100%">
+        I'm back — resume focus
+      </button>
+    </div>
+  </div>
+
+  <div id="toasts"></div>
+
+  <script>
+    window.FIREBASE_CONFIG = {{ firebase_config | tojson }};
+    window.DEV_AUTH = {{ 'true' if dev_auth else 'false' }};
+  </script>
+  <script type="module" src="/static/js/main.js"></script>
+</body>
+</html>
