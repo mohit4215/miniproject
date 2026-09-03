@@ -5,6 +5,7 @@ import { initNotebook, setUid } from "./notebook.js";
 import { initNotes } from "./notes.js";
 import { initStats } from "./gamify.js";
 import { initAdmin } from "./admin.js";
+import { initGlassBuddy } from "./glassbuddy.js";
 
 const $ = (s) => document.querySelector(s);
 
@@ -40,6 +41,7 @@ function boot() {
   loadPublic();
 }
 
+initGlassBuddy();
 initAuth(() => {});
 document.addEventListener("sp-ready", () => {
   if (!document.getElementById("app-view").dataset.booted) {

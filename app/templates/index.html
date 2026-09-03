@@ -11,49 +11,149 @@
 </head>
 <body>
 
+  <!-- ═══════════ ANIMATED WHITE MESH BACKGROUND ═══════════ -->
+  <div class="animated-bg">
+    <div class="mesh-orb mesh-orb-1"></div>
+    <div class="mesh-orb mesh-orb-2"></div>
+    <div class="mesh-orb mesh-orb-3"></div>
+    <div class="mesh-orb mesh-orb-4"></div>
+  </div>
+
   <!-- ═══════════ AUTH VIEW ═══════════ -->
   <div id="auth-view" class="auth-wrap">
-    <div class="auth-bg-orb orb1"></div>
-    <div class="auth-bg-orb orb2"></div>
-    <div class="authbox card">
-      <div class="brand">
-        <span class="brand-mark">📚</span>
-        <span>Study<b>Partner</b></span>
-      </div>
-      <p class="tagline">Your all-in-one academic focus companion</p>
+    <div class="auth-container">
+      
+      <!-- GlassBuddy Mascot Intro Figure -->
+      <div class="glassbuddy-showcase" id="auth-glassbuddy">
+        <div class="glassbuddy-speech">
+          <div class="gb-speech-text">
+            Hi! I'm <strong>GlassBuddy</strong> ✨ Ready to crush your study goals today?
+          </div>
+          <div class="gb-speech-arrow"></div>
+        </div>
 
-      <div class="auth-features">
-        <span class="auth-feature-chip">⏱ Focus Rooms</span>
-        <span class="auth-feature-chip">🤖 AI Notebook</span>
-        <span class="auth-feature-chip">🏆 Gamification</span>
-      </div>
+        <div class="glassbuddy-avatar-wrap">
+          <div class="glassbuddy-aura"></div>
+          <div class="glassbuddy-character">
+            <svg class="gb-svg" viewBox="0 0 160 170" width="150" height="160" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="gbGlass" x1="20" y1="10" x2="140" y2="150" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="rgba(255, 255, 255, 0.95)"/>
+                  <stop offset="35%" stop-color="rgba(224, 231, 255, 0.65)"/>
+                  <stop offset="70%" stop-color="rgba(199, 210, 254, 0.45)"/>
+                  <stop offset="100%" stop-color="rgba(255, 255, 255, 0.9)"/>
+                </linearGradient>
+                <linearGradient id="gbHighlight" x1="40" y1="20" x2="120" y2="80" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+                  <stop offset="100%" stop-color="#ffffff" stop-opacity="0"/>
+                </linearGradient>
+                <radialGradient id="gbCore" cx="80" cy="92" r="32" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#818cf8"/>
+                  <stop offset="50%" stop-color="#6366f1"/>
+                  <stop offset="100%" stop-color="#4f46e5" stop-opacity="0"/>
+                </radialGradient>
+                <linearGradient id="gbEar" x1="0" y1="0" x2="20" y2="30" gradientUnits="userSpaceOnUse">
+                  <stop offset="0%" stop-color="#818cf8"/>
+                  <stop offset="100%" stop-color="#4f46e5"/>
+                </linearGradient>
+                <filter id="gbGlow" x="-20%" y="-20%" width="140%" height="140%">
+                  <feGaussianBlur stdDeviation="6" result="blur"/>
+                  <feComposite in="SourceGraphic" in2="blur" operator="over"/>
+                </filter>
+              </defs>
+              
+              <!-- Floating Glass Headphones Band -->
+              <path d="M 40 55 C 40 22, 120 22, 120 55" stroke="url(#gbGlass)" stroke-width="6" stroke-linecap="round" fill="none" opacity="0.95"/>
+              
+              <!-- Headphone earcups -->
+              <rect x="28" y="48" width="12" height="24" rx="6" fill="url(#gbEar)" class="gb-earcup-l" filter="url(#gbGlow)" opacity="0.9"/>
+              <rect x="120" y="48" width="12" height="24" rx="6" fill="url(#gbEar)" class="gb-earcup-r" filter="url(#gbGlow)" opacity="0.9"/>
+              
+              <!-- Glowing Inner Core -->
+              <circle cx="80" cy="92" r="26" fill="url(#gbCore)" class="gb-inner-core" filter="url(#gbGlow)"/>
+              
+              <!-- Main Glass Body Capsule -->
+              <rect x="36" y="32" width="88" height="105" rx="44" fill="url(#gbGlass)" stroke="rgba(255,255,255,0.95)" stroke-width="2.5" class="gb-glass-body"/>
+              
+              <!-- Specular Highlight Curve -->
+              <path d="M 52 42 C 65 35, 95 35, 108 42 C 100 48, 60 48, 52 42 Z" fill="url(#gbHighlight)" opacity="0.95"/>
+              <ellipse cx="56" cy="62" rx="4" ry="12" transform="rotate(-20 56 62)" fill="#ffffff" opacity="0.8"/>
+              
+              <!-- Face: Eyes -->
+              <g class="gb-eyes">
+                <ellipse cx="66" cy="74" rx="5" ry="6" fill="#1e1b4b" class="gb-eye-l"/>
+                <circle cx="68" cy="72" r="2" fill="#ffffff"/>
+                <ellipse cx="94" cy="74" rx="5" ry="6" fill="#1e1b4b" class="gb-eye-r"/>
+                <circle cx="96" cy="72" r="2" fill="#ffffff"/>
+              </g>
+              
+              <!-- Face: Cute Blushing Cheeks -->
+              <ellipse cx="57" cy="83" rx="4" ry="2.5" fill="#f472b6" opacity="0.65"/>
+              <ellipse cx="103" cy="83" rx="4" ry="2.5" fill="#f472b6" opacity="0.65"/>
+              
+              <!-- Face: Smile -->
+              <path d="M 74 85 Q 80 91 86 85" stroke="#1e1b4b" stroke-width="2.5" stroke-linecap="round" fill="none" class="gb-mouth"/>
+              
+              <!-- Floating Glass Hands -->
+              <g class="gb-hand-left">
+                <circle cx="24" cy="98" r="10" fill="url(#gbGlass)" stroke="rgba(255,255,255,0.95)" stroke-width="2"/>
+              </g>
+              <g class="gb-hand-right">
+                <circle cx="136" cy="94" r="10" fill="url(#gbGlass)" stroke="rgba(255,255,255,0.95)" stroke-width="2"/>
+              </g>
+            </svg>
+          </div>
+        </div>
 
-      <label>Email</label>
-      <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
-      <label>Password</label>
-      <input type="password" id="auth-pass" placeholder="••••••••" autocomplete="current-password" />
-
-      <div class="auth-actions">
-        <button class="btn primary" id="login-btn">Sign in</button>
-        <button class="btn" id="signup-btn">Create account</button>
-      </div>
-      <button class="btn" id="google-btn" style="width:100%;margin-top:8px">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
-        Continue with Google
-      </button>
-
-      <p class="auth-msg" id="auth-msg"></p>
-
-      {% if dev_auth %}
-      <div class="auth-divider">development mode</div>
-      <div class="dev-banner">
-        <div class="dev-banner-label">⚡ Dev Access</div>
-        <div class="row" style="gap:8px">
-          <input type="text" id="dev-uid" placeholder="Enter any username…" style="flex:1" />
-          <button class="btn primary sm" id="dev-login">Enter →</button>
+        <div class="glassbuddy-name-badge">
+          <span class="gb-sparkle">✨</span>
+          <span class="gb-name">GlassBuddy</span>
+          <span class="gb-status-dot"></span>
         </div>
       </div>
-      {% endif %}
+
+      <!-- Auth Box -->
+      <div class="authbox card">
+        <div class="brand">
+          <span class="brand-mark">📚</span>
+          <span>Study<b>Partner</b></span>
+        </div>
+        <p class="tagline">Your all-in-one academic focus companion</p>
+
+        <div class="auth-features">
+          <span class="auth-feature-chip">⏱ Focus Rooms</span>
+          <span class="auth-feature-chip">🤖 AI Notebook</span>
+          <span class="auth-feature-chip">🏆 Gamification</span>
+        </div>
+
+        <label>Email</label>
+        <input type="email" id="auth-email" placeholder="you@example.com" autocomplete="email" />
+        <label>Password</label>
+        <input type="password" id="auth-pass" placeholder="••••••••" autocomplete="current-password" />
+
+        <div class="auth-actions">
+          <button class="btn primary" id="login-btn">Sign in</button>
+          <button class="btn" id="signup-btn">Create account</button>
+        </div>
+        <button class="btn" id="google-btn" style="width:100%;margin-top:8px">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4"/><path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853"/><path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z" fill="#FBBC05"/><path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335"/></svg>
+          Continue with Google
+        </button>
+
+        <p class="auth-msg" id="auth-msg"></p>
+
+        {% if dev_auth %}
+        <div class="auth-divider">development mode</div>
+        <div class="dev-banner">
+          <div class="dev-banner-label">⚡ Dev Access</div>
+          <div class="row" style="gap:8px">
+            <input type="text" id="dev-uid" placeholder="Enter any username…" style="flex:1" />
+            <button class="btn primary sm" id="dev-login">Enter →</button>
+          </div>
+        </div>
+        {% endif %}
+      </div>
+
     </div>
   </div>
 
@@ -106,6 +206,31 @@
 
     <!-- ─── Main content ─── -->
     <main class="content" role="main">
+
+      <!-- ─── Interactive GlassBuddy Companion Banner ─── -->
+      <div class="app-glassbuddy-banner">
+        <div class="gb-banner-left">
+          <div class="glassbuddy-compact-avatar" title="Click GlassBuddy for motivation!">
+            <svg viewBox="0 0 160 170" width="30" height="32" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <rect x="36" y="32" width="88" height="105" rx="44" fill="url(#gbGlass)" stroke="rgba(255,255,255,0.95)" stroke-width="3"/>
+              <circle cx="80" cy="92" r="22" fill="#6366f1" opacity="0.85"/>
+              <ellipse cx="66" cy="74" rx="5" ry="6" fill="#1e1b4b"/>
+              <ellipse cx="94" cy="74" rx="5" ry="6" fill="#1e1b4b"/>
+              <path d="M 74 85 Q 80 91 86 85" stroke="#1e1b4b" stroke-width="2.5" stroke-linecap="round" fill="none"/>
+            </svg>
+          </div>
+          <div>
+            <div class="gb-banner-title">
+              <span>✨ GlassBuddy Companion</span>
+              <span class="badge primary">Active</span>
+            </div>
+            <div class="gb-banner-speech gb-speech-text">
+              Deep focus mode ready. Let's make today productive! 🎯
+            </div>
+          </div>
+        </div>
+        <div class="online-indicator">Focus Assistant Ready</div>
+      </div>
 
       <!-- ═══ ROOMS PANEL ═══ -->
       <section class="panel active" id="panel-rooms">
