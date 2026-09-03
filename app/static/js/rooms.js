@@ -166,7 +166,7 @@ const RING_CIRCUMFERENCE = 2 * Math.PI * 45; // r=45
 function setRingProgress(fraction, ph) {
   const ring = $("#timer-ring");
   if (!ring) return;
-  ring.className = `timer-ring-fg ${ph}`;
+  ring.setAttribute("class", `timer-ring-fg ${ph}`);
   const offset = RING_CIRCUMFERENCE * (1 - Math.max(0, Math.min(1, fraction)));
   ring.style.strokeDashoffset = offset;
 }
